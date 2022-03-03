@@ -142,13 +142,60 @@ h6 {
 
 .umberalla{
   height: 70%;
-  width: 100%;
-  margin-top: 10px; 
+  width: 25% !important;
 }
+.hourly {
+  margin-top: 10px;
+  padding-bottom: 10px;
+  overflow: auto;
+  width: 18% !important;
+  height: 80% !important;
+  &__inner {
+    display: flex;
+  }
 
+  &__box-wrapper {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 120px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    &:first-child {
+      min-width: 110px;
+      padding-left: 0;
+    }
+
+    &:last-child {
+      min-width: 110px;
+      padding-right: 0;
+    }
+  }
+
+  &__box {
+    text-align: center;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: $secondary;
+    color: #fff;
+
+    span {
+      display: block;
+    }
+  }
+
+  &__time {
+    font-size: 1rem;
+    font-weight: $f-light;
+
+    &--now {
+      font-weight: $f-semi-bold;
+    }
+  }
+}
 .weekly {
   margin-top: 20px;
-
+  // margin-bottom: 20px;
   &__title {
     opacity: 0.9;
     margin-bottom: 15px;
@@ -163,10 +210,8 @@ h6 {
     background-color: $tertiary;
     border-radius: 10px;
     color: #fff;
-
-    &:not(:last-child) {
-      margin-bottom: 15px;
-    }
+    width: 80%;
+    margin:10px;
   }
 
   &__inner {

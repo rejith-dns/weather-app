@@ -24,12 +24,12 @@ function SearchBox() {
 
   const getWeatherData = async () => {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${process.env.REACT_APP_API_KEY}`
+      `${process.env.REACT_APP_BASE_URL}/weather?q=${query}&appid=${process.env.REACT_APP_API_KEY}`
     );
     const data = await response.json();
     if (response.status === 200) {
       const weatherData = await fetch(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly&appid=${process.env.REACT_APP_API_KEY}&units=metric`
+        `${process.env.REACT_APP_BASE_URL}/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly&appid=${process.env.REACT_APP_API_KEY}&units=metric`
       );
       const dailyData = await weatherData.json();
       setResults(dailyData);
@@ -51,16 +51,15 @@ function SearchBox() {
             return o.temp.min;
           })
         );
-        let winterDayFilter = winterDays.filter((day:any)=>{
-          if(day.temp.min === lowestTemp){
+        let winterDayFilter = winterDays.filter((day: any) => {
+          if (day.temp.min === lowestTemp) {
             return day;
           }
-        })
-        if(winterDayFilter.length ===5){
+        });
+        if (winterDayFilter.length === 5) {
           fiveDayData[0].jacket = true;
           return setDailyData(fiveDayData);
-        }
-        else{
+        } else {
           fiveDayData = fiveDayData.map((day: any) => {
             if (day.temp.min === lowestTemp) {
               day.jacket = true;
@@ -69,7 +68,6 @@ function SearchBox() {
             return day;
           });
         }
-        
       }
 
       // Sell Umberall
