@@ -1,7 +1,7 @@
-import React from "react";
-import "./App.scss";
+import React from 'react';
+import './App.scss';
 
-import SearchBox from "./components/SearchBox";
+import SearchBox from './components/SearchBox';
 
 function App() {
   return (

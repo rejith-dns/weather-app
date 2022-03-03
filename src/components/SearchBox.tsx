@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from "react";
-import DailyWeather from "./DailyWeather";
+import React, { useState, useEffect } from 'react';
+import { DailyWeatherType } from '../types/DailyWeatherType';
+import DailyWeather from './DailyWeather';
 
 function SearchBox() {
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<object>({});
   const [loading, setLoading] = useState<boolean>(false);
-  const [daily, setDailyData] = useState<object[]>([]);
-  const [timezone, setTimezone] = useState<string>("");
+  const [daily, setDailyData] = useState<DailyWeatherType[]>([]);
+  const [timezone, setTimezone] = useState<string>('');
   const [noData, setNoData] = useState<boolean>(false);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setQuery(value);
     setResults({});
-    setTimezone("");
+    setTimezone('');
     setDailyData([]);
     setNoData(false);
   };
@@ -24,12 +25,12 @@ function SearchBox() {
 
   const getWeatherData = async () => {
     const response = await fetch(
-      `${process.env.REACT_APP_BASE_URL}/weather?q=${query}&appid=${process.env.REACT_APP_API_KEY}`
+      `${process.env.REACT_APP_BASE_URL}/weather?q=${query}&appid=${process.env.REACT_APP_API_KEY}`,
     );
     const data = await response.json();
     if (response.status === 200) {
       const weatherData = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly&appid=${process.env.REACT_APP_API_KEY}&units=metric`
+        `${process.env.REACT_APP_BASE_URL}/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=minutely,hourly&appid=${process.env.REACT_APP_API_KEY}&units=metric`,
       );
       const dailyData = await weatherData.json();
       setResults(dailyData);
@@ -38,76 +39,62 @@ function SearchBox() {
       let fiveDayData = dailyData.daily.slice(0, 5);
 
       // Sell jacket
-      let winterDays = fiveDayData.filter((day: any) => {
+      const winterDays = fiveDayData.filter((day: any) => {
         if (day.temp.min < 25) {
           return day;
         }
+        return false;
       });
 
       if (winterDays.length > 0) {
-        let lowestTemp = Math.min.apply(
-          Math,
-          winterDays.map(function (o: any) {
-            return o.temp.min;
-          })
+        const lowestTemp = Math.min(...winterDays.map((o: any) => o.temp.min));
+
+        const winterDayFilter = winterDays.filter(
+          (day: any) => day.temp.min === lowestTemp,
         );
-        let winterDayFilter = winterDays.filter((day: any) => {
-          if (day.temp.min === lowestTemp) {
-            return day;
-          }
-        });
         if (winterDayFilter.length === 5) {
           fiveDayData[0].jacket = true;
           return setDailyData(fiveDayData);
-        } else {
-          fiveDayData = fiveDayData.map((day: any) => {
-            if (day.temp.min === lowestTemp) {
-              day.jacket = true;
-              return day;
-            }
-            return day;
-          });
         }
+        fiveDayData = fiveDayData.map((day: any) => {
+          if (day.temp.min === lowestTemp) {
+            day.jacket = true;
+            return day;
+          }
+          return day;
+        });
       }
 
       // Sell Umberall
-      let rainyDays = fiveDayData.filter((day: any) => {
-        if (day.weather[0].main == "Rain") {
+      const rainyDays = fiveDayData.filter((day: any) => {
+        if (day.weather[0].main === 'Rain') {
           return day;
         }
+        return false;
       });
 
-      let rainFilter = rainyDays[0].weather[0].description;
-      let rainFilter2 = rainyDays.map((day: any) => {
-        if (day.weather[0].description == rainFilter) {
-          return day;
-        }
-      });
+      const rainFilter = rainyDays[0].weather[0].description;
+      const rainFilter2 = rainyDays.filter(
+        (day: any) => day.weather[0].description === rainFilter,
+      );
       if (rainyDays.length > 0) {
         if (rainyDays.length === 5 && rainFilter2.length === 5) {
           fiveDayData[0].umberalla = true;
           return setDailyData(fiveDayData);
-        } else {
-          let highestRain = Math.max.apply(
-            Math,
-            rainyDays.map(function (o: any) {
-              return o.rain;
-            })
-          );
-          fiveDayData = fiveDayData.map((day: any) => {
-            if (day.rain === highestRain) {
-              day.umberalla = true;
-              return day;
-            }
-            return day;
-          });
-          return setDailyData(fiveDayData);
         }
+        const highestRain = Math.min(...rainyDays.map((o: any) => o.rain));
+        fiveDayData = fiveDayData.map((day: any) => {
+          if (day.rain === highestRain) {
+            day.umberalla = true;
+            return day;
+          }
+          return day;
+        });
+        return setDailyData(fiveDayData);
       }
-      setDailyData(fiveDayData);
-    } else {
-      setNoData(true);
+      return setDailyData(fiveDayData);
     }
+    return setNoData(true);
   };
 
   return (
@@ -119,7 +106,7 @@ function SearchBox() {
           onChange={onChange}
           placeholder="Enter city name"
         />
-        <button type="submit" onClick={getWeatherData}>
+        <button type="submit" onClick={getWeatherData} className="cursor-cls">
           Submit
         </button>
       </div>
