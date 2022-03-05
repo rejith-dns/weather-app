@@ -63,12 +63,11 @@ function SearchBox() {
         }
         return false;
       });
-
-      const rainFilter = rainyDays[0].weather[0].description;
-      const rainFilter2 = rainyDays.filter(
-        (day: any) => day.weather[0].description === rainFilter,
-      );
       if (rainyDays.length > 0) {
+        const rainFilter = rainyDays[0].weather[0].description;
+        const rainFilter2 = rainyDays.filter(
+          (day: any) => day.weather[0].description === rainFilter,
+        );
         if (rainyDays.length === 5 && rainFilter2.length === 5) {
           fiveDayData[0].umberalla = true;
           return setDailyData(fiveDayData);
