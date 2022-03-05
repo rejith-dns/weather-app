@@ -1,6 +1,6 @@
-import { DailyWeatherType } from "./DailyWeatherType";
+import { DailyWeatherType } from './DailyWeatherType';
+
 export type DailyWeatherProps = {
   dailyWeather: DailyWeatherType[];
   timezone: string;
 };
-

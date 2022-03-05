@@ -15,13 +15,14 @@ const DailyWeather: React.FC<DailyWeatherProps> = ({
     {dailyWeather.length > 0
       && dailyWeather.map((weather: any) => (
         <div
+          key={weather.id}
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
-          <div className="weekly__card" key={weather.dt}>
+          <div className="weekly__card">
             <div className="weekly__inner">
               <div className="weekly__left-content">
                 <div>

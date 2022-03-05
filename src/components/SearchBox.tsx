@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { DailyWeatherType } from '../types/DailyWeatherType';
 import DailyWeather from './DailyWeather';
 
 function SearchBox() {
+  const { city } = useParams();
+  const navigate = useNavigate();
   const [query, setQuery] = useState<string>('');
+  const [finalQuery, setFinalQuery] = useState<string>('');
   const [results, setResults] = useState<object>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [daily, setDailyData] = useState<DailyWeatherType[]>([]);
   const [timezone, setTimezone] = useState<string>('');
   const [noData, setNoData] = useState<boolean>(false);
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setQuery(value);
-    setResults({});
-    setTimezone('');
-    setDailyData([]);
-    setNoData(false);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-  }, [daily.length > 0]);
 
   const getWeatherData = async () => {
     const response = await fetch(
@@ -96,20 +87,49 @@ function SearchBox() {
     }
     return setNoData(true);
   };
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setQuery(value);
+    setResults({});
+    setTimezone('');
+    setDailyData([]);
+    setNoData(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+  }, [daily.length > 0]);
+
+  useEffect(() => {
+    if (city) {
+      setFinalQuery(city.split('=')[1]);
+      setQuery(city.split('=')[1]);
+    }
+  }, [city]);
+  useEffect(() => {
+    getWeatherData();
+  }, [finalQuery]);
+
+  const onFormSubmit = (e: any) => {
+    e.preventDefault();
+    navigate(`/city=${query}`);
+  };
 
   return (
     <>
-      <div className="search">
-        <input
-          type="text"
-          value={query}
-          onChange={onChange}
-          placeholder="Enter city name"
-        />
-        <button type="submit" onClick={getWeatherData} className="cursor-cls">
-          Submit
-        </button>
-      </div>
+      <form onSubmit={onFormSubmit}>
+        <div className="search">
+          <input
+            type="text"
+            value={query}
+            onChange={onChange}
+            placeholder="Enter city name"
+          />
+          <button type="submit" className="cursor-cls">
+            Submit
+          </button>
+        </div>
+      </form>
       {loading && results && daily.length > 0 && timezone && (
         <DailyWeather dailyWeather={daily} timezone={timezone} />
       )}
